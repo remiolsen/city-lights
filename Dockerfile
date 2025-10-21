@@ -1,14 +1,7 @@
-FROM ghcr.io/astral-sh/uv:debian-slim
+FROM python:3.12-slim-trixie
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-ENV DEBIAN_FRONTEND=noninteractive
-
-ADD . /usr/src/city-lights
-WORKDIR /usr/src/city-lights
-RUN apt-get update && \
-    apt-get install -y build-essential && \
-    uv run cl \
-    apt-get remove -y build-essential && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+ADD . /app
+WORKDIR /app
+RUN pip install polars-lts-cpu && uv sync && uv run cl
 CMD ["uv", "run", "cl"]
